@@ -1,5 +1,5 @@
 {
-  "name": "zokou-2.0",
+  "name": "zyy-2.0",
   "version": "2.0.0",
   "description": "",
   "main": "index.js",
@@ -18,9 +18,10 @@
     "whatsapp",
     "whatsapp-bot",
     "Fedora",
-    "FaouzKK"
+    "FaouzKK", 
+    "Fatao"
   ],
-  "author": "Fedora && FaouzKK",
+  "author": "Fedora, Fatao && FaouzKK",
   "license": "ISC",
   "dependencies": {
     "@hapi/boom": "^10.0.1",
