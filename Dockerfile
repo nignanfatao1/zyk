@@ -9,8 +9,8 @@ RUN apt-get update && \
   npm i pm2 -g && \
   rm -rf /var/lib/apt/lists/*
   
-RUN git clone https://github.com/FaouzKK/zokou-french-version-whatsapp-bot  /root/my_app
-WORKDIR /root/my_app/
+RUN git clone https://github.com/nignanfatao1/Zyy  /root/my_zyy_app
+WORKDIR /root/my_zyy_app/
 
 
 COPY package.json .
