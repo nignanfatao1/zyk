@@ -1,7 +1,10 @@
 const { zokou } = require('../framework/zokou');
 const yts = require('yt-search');
-const { exec } = require('child_process');
+const youtubedl = require('youtube-dl-exec');
+const fs = require('fs');
+const path = require('path');
 
+// Commande pour télécharger une chanson
 zokou({
   nomCom: 'song',
   categorie: 'Recherche',
@@ -15,30 +18,31 @@ zokou({
   }
 
   try {
-    const searchTerm = arg.join(' ');
+    let searchTerm = arg.join(' ');
     const searchResults = await yts(searchTerm);
     const videos = searchResults.videos;
 
-    if (videos && videos.length > 0) {
-      const videoInfo = videos[0];
-      const videoUrl = videoInfo.url;
+    if (videos && videos.length > 0 && videos[0]) {
+      const videoUrl = videos[0].url;
       let infoMess = {
-        image: { url: videoInfo.thumbnail },
-        caption: `\n*Nom de l'audio :* _${videoInfo.title}_\n\n*Durée :* _${videoInfo.timestamp}_\n*Lien :* _${videoInfo.url}_\n\n_*En cours de téléchargement...*_\n\n`
+        image: { url: videos[0].thumbnail },
+        caption: `\n*nom de l'audio :* _${videos[0].title}_\n\n*Durée :* _${videos[0].timestamp}_\n*Lien :* _${videos[0].url}_\n\n_*En cours de téléchargement...*_\n\n`
       };
 
       zk.sendMessage(origineMessage, infoMess, { quoted: ms });
 
-      const filename = 'audio.mp3';
-      exec(`yt-dlp -x --audio-format mp3 -o ${filename} ${videoUrl}`, (error, stdout, stderr) => {
-        if (error) {
-          console.error(`Erreur lors du téléchargement de l'audio : ${error.message}`);
-          repondre('Une erreur est survenue lors du téléchargement de l\'audio.');
-          return;
-        }
+      const filename = path.join(__dirname, 'audio.mp3');
 
+      youtubedl(videoUrl, {
+        extractAudio: true,
+        audioFormat: 'mp3',
+        output: filename
+      }).then(() => {
         zk.sendMessage(origineMessage, { audio: { url: filename }, mimetype: 'audio/mp4' }, { quoted: ms, ptt: false });
         console.log('Envoi du fichier audio terminé !');
+      }).catch(error => {
+        console.error('Erreur lors du téléchargement de l\'audio :', error);
+        repondre('Une erreur est survenue lors du téléchargement de l\'audio.');
       });
     } else {
       repondre('Aucune vidéo trouvée.');
@@ -49,7 +53,7 @@ zokou({
   }
 });
 
-
+// Commande pour télécharger une vidéo
 zokou({
   nomCom: 'video',
   categorie: 'Recherche',
@@ -67,26 +71,25 @@ zokou({
     const searchResults = await yts(searchTerm);
     const videos = searchResults.videos;
 
-    if (videos && videos.length > 0) {
+    if (videos && videos.length > 0 && videos[0]) {
       const videoInfo = videos[0];
-      const videoUrl = videoInfo.url;
       let infoMess = {
-        image: { url: videoInfo.thumbnail },
-        caption: `*Nom de la vidéo :* _${videoInfo.title}_\n*Durée :* _${videoInfo.timestamp}_\n*Lien :* _${videoInfo.url}_\n\n_*En cours de téléchargement...*_\n\n`
+        image: { url: videos[0].thumbnail },
+        caption: `*nom de la vidéo :* _${videoInfo.title}_\n*Durée :* _${videoInfo.timestamp}_\n*Lien :* _${videoInfo.url}_\n\n_*En cours de téléchargement...*_\n\n`
       };
 
       zk.sendMessage(origineMessage, infoMess, { quoted: ms });
 
-      const filename = 'video.mp4';
-      exec(`yt-dlp -f mp4 -o ${filename} ${videoUrl}`, (error, stdout, stderr) => {
-        if (error) {
-          console.error(`Erreur lors du téléchargement de la vidéo : ${error.message}`);
-          repondre('Une erreur est survenue lors du téléchargement de la vidéo.');
-          return;
-        }
+      const filename = path.join(__dirname, 'video.mp4');
 
+      youtubedl(videoInfo.url, {
+        format: 'mp4',
+        output: filename
+      }).then(() => {
         zk.sendMessage(origineMessage, { video: { url: filename }, caption: '*Zokou-Md*', gifPlayback: false }, { quoted: ms });
-        console.log('Envoi du fichier vidéo terminé !');
+      }).catch(error => {
+        console.error('Erreur lors du téléchargement de la vidéo :', error);
+        repondre('Une erreur est survenue lors du téléchargement de la vidéo.');
       });
     } else {
       repondre('Aucune vidéo trouvée.');
