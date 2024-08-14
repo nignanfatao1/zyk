@@ -4,6 +4,15 @@ const youtubedl = require('youtube-dl-exec');
 const fs = require('fs');
 const path = require('path');
 
+// Configuration commune pour youtube-dl-exec
+const commonOptions = {
+  dumpSingleJson: true,
+  noCheckCertificates: true,
+  noWarnings: true,
+  preferFreeFormats: true,
+  addHeader: ['referer:youtube.com', 'user-agent:googlebot']
+};
+
 // Commande pour télécharger une chanson
 zokou({
   nomCom: 'song',
@@ -26,7 +35,7 @@ zokou({
       const videoUrl = videos[0].url;
       let infoMess = {
         image: { url: videos[0].thumbnail },
-        caption: `\n*nom de l'audio :* _${videos[0].title}_\n\n*Durée :* _${videos[0].timestamp}_\n*Lien :* _${videos[0].url}_\n\n_*En cours de téléchargement...*_\n\n`
+        caption: `\n*Nom de l'audio :* _${videos[0].title}_\n\n*Durée :* _${videos[0].timestamp}_\n*Lien :* _${videos[0].url}_\n\n_*En cours de téléchargement...*_\n\n`
       };
 
       zk.sendMessage(origineMessage, infoMess, { quoted: ms });
@@ -34,6 +43,7 @@ zokou({
       const filename = path.join(__dirname, 'audio.mp3');
 
       youtubedl(videoUrl, {
+        ...commonOptions,
         extractAudio: true,
         audioFormat: 'mp3',
         output: filename
@@ -59,43 +69,4 @@ zokou({
   categorie: 'Recherche',
   reaction: '🎥'
 }, async (origineMessage, zk, commandeOptions) => {
-  const { arg, ms, repondre } = commandeOptions;
-  
-  if (!arg[0]) {
-    repondre('Veuillez entrer un terme de recherche s\'il vous plaît.');
-    return;
-  }
-
-  const searchTerm = arg.join(' ');
-  try {
-    const searchResults = await yts(searchTerm);
-    const videos = searchResults.videos;
-
-    if (videos && videos.length > 0 && videos[0]) {
-      const videoInfo = videos[0];
-      let infoMess = {
-        image: { url: videos[0].thumbnail },
-        caption: `*nom de la vidéo :* _${videoInfo.title}_\n*Durée :* _${videoInfo.timestamp}_\n*Lien :* _${videoInfo.url}_\n\n_*En cours de téléchargement...*_\n\n`
-      };
-
-      zk.sendMessage(origineMessage, infoMess, { quoted: ms });
-
-      const filename = path.join(__dirname, 'video.mp4');
-
-      youtubedl(videoInfo.url, {
-        format: 'mp4',
-        output: filename
-      }).then(() => {
-        zk.sendMessage(origineMessage, { video: { url: filename }, caption: '*Zokou-Md*', gifPlayback: false }, { quoted: ms });
-      }).catch(error => {
-        console.error('Erreur lors du téléchargement de la vidéo :', error);
-        repondre('Une erreur est survenue lors du téléchargement de la vidéo.');
-      });
-    } else {
-      repondre('Aucune vidéo trouvée.');
-    }
-  } catch (error) {
-    console.error('Erreur lors de la recherche ou du téléchargement de la vidéo :', error);
-    repondre('Une erreur est survenue lors de la recherche ou du téléchargement de la vidéo.');
-  }
-});
+  const { arg, ms, repondre } = commande
