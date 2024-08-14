@@ -1,11 +1,15 @@
 FROM node:lts-buster
 
-# Installer les dépendances nécessaires
+# Ajouter le dépôt de deadsnakes et installer les dépendances nécessaires
 RUN apt-get update && \
   apt-get install -y \
   ffmpeg \
   imagemagick \
-  webp \
+  webp && \
+  apt-get install -y software-properties-common && \
+  add-apt-repository ppa:deadsnakes/ppa && \
+  apt-get update && \
+  apt-get install -y \
   python3.8 \
   python3.8-dev \
   python3.8-distutils && \
