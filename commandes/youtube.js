@@ -69,4 +69,44 @@ zokou({
   categorie: 'Recherche',
   reaction: '🎥'
 }, async (origineMessage, zk, commandeOptions) => {
-  const { arg, ms, repondre } = commande
+  const { arg, ms, repondre } = commandeOptions;
+  
+  if (!arg[0]) {
+    repondre('Veuillez entrer un terme de recherche s\'il vous plaît.');
+    return;
+  }
+
+  const searchTerm = arg.join(' ');
+  try {
+    const searchResults = await yts(searchTerm);
+    const videos = searchResults.videos;
+
+    if (videos && videos.length > 0 && videos[0]) {
+      const videoInfo = videos[0];
+      let infoMess = {
+        image: { url: videos[0].thumbnail },
+        caption: `*Nom de la vidéo :* _${videoInfo.title}_\n*Durée :* _${videoInfo.timestamp}_\n*Lien :* _${videoInfo.url}_\n\n_*En cours de téléchargement...*_\n\n`
+      };
+
+      zk.sendMessage(origineMessage, infoMess, { quoted: ms });
+
+      const filename = path.join(__dirname, 'video.mp4');
+
+      youtubedl(videoInfo.url, {
+        ...commonOptions,
+        format: 'mp4',
+        output: filename
+      }).then(() => {
+        zk.sendMessage(origineMessage, { video: { url: filename }, caption: '*Zokou-Md*', gifPlayback: false }, { quoted: ms });
+      }).catch(error => {
+        console.error('Erreur lors du téléchargement de la vidéo :', error);
+        repondre('Une erreur est survenue lors du téléchargement de la vidéo.');
+      });
+    } else {
+      repondre('Aucune vidéo trouvée.');
+    }
+  } catch (error) {
+    console.error('Erreur lors de la recherche ou du téléchargement de la vidéo :', error);
+    repondre('Une erreur est survenue lors de la recherche ou du téléchargement de la vidéo.');
+  }
+});
