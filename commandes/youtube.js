@@ -2,11 +2,10 @@ const { zokou } = require("../framework/zokou");
 const yts = require('yt-search');
 const ytdl = require('ytdl-core');
 const fs = require('fs');
-const cookiefile = require('cookiefile');
-const Cookie = require('tough-cookie').Cookie;
+const CookieFile = require('cookiefile').CookieFile;
 
-const cookieFilePath = '../coki.txt';
-const cookies = new cookiefile.CookieMap(cookieFilePath);
+const cookieFilePath = '../coki.json'; // Remplacez par le chemin réel de votre fichier cookies.txt
+const cookies = new CookieFile(cookieFilePath);
 
 zokou({
   nomCom: "song",
