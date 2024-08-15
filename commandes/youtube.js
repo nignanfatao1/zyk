@@ -2,10 +2,10 @@ const { zokou } = require("../framework/zokou");
 const yts = require('yt-search');
 const ytdl = require('ytdl-core');
 const fs = require('fs');
-const CookieFile = require('cookiefile').CookieFile;
+const CookieFile = require('cookiefile');
 
-const cookieFilePath = '../coki.json'; // Remplacez par le chemin réel de votre fichier cookies.txt
-const cookies = new CookieFile(cookieFilePath);
+const cookieFilePath = 'path/to/your/cookies.txt'; // Remplacez par le chemin réel de votre fichier cookies.txt
+const cookies = new CookieFile.CookieMap(cookieFilePath);
 
 zokou({
   nomCom: "song",
@@ -36,13 +36,12 @@ zokou({
 *Lien :* _${videos[0].url}_
 
 _*En cours de téléchargement...*_\n\n`
-      }
+      };
 
       zk.sendMessage(origineMessage, infoMess, { quoted: ms });
 
       const filename = 'audio.mp3';
-
-      const cookieHeader = cookies.toRequestHeader().join('; ');
+      const cookieHeader = cookies.toRequestHeader();
 
       const audioStream = ytdl(urlElement, {
         filter: 'audioonly',
@@ -106,8 +105,7 @@ _*En cours de téléchargement...*_\n\n`
       zk.sendMessage(origineMessage, InfoMess, { quoted: ms });
 
       const filename = 'video.mp4';
-
-      const cookieHeader = cookies.toRequestHeader().join('; ');
+      const cookieHeader = cookies.toRequestHeader();
 
       const videoStream = ytdl(Element.url, {
         format: 'mp4',
