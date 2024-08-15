@@ -1,0 +1,30 @@
+[
+{
+    "domain": ".youtube.com",
+    "expirationDate": 1723746801,
+    "hostOnly": false,
+    "httpOnly": true,
+    "name": "GPS",
+    "path": "/",
+    "sameSite": "unspecified",
+    "secure": true,
+    "session": false,
+    "storeId": "0",
+    "value": "1",
+    "id": 1
+},
+{
+    "domain": ".youtube.com",
+    "expirationDate": 1758305005,
+    "hostOnly": false,
+    "httpOnly": false,
+    "name": "PREF",
+    "path": "/",
+    "sameSite": "unspecified",
+    "secure": true,
+    "session": false,
+    "storeId": "0",
+    "value": "f6=40000000&tz=Africa.Ouagadougou",
+    "id": 2
+}
+]
