@@ -70,6 +70,6 @@
     "youtubedl-core": "^4.11.7",
     "yt-search": "^2.10.4",
     "youtube-dl-exec": "github:microlinkhq/youtube-dl-exec",
-    "ytdl-core": "^4.11.5"
+    "ytdl-core": "github:distubejs/ytdl-core"
   }
 }
