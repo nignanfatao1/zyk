@@ -3,17 +3,37 @@ const yts = require('yt-search');
 const ytdl = require('ytdl-core');
 const fs = require('fs');
 
-// Chemin vers votre fichier de cookies
-const cookieFilePath = '../bdd/coki';
-
-// Vérifiez si le fichier de cookies existe
-if (!fs.existsSync(cookieFilePath)) {
-  console.error('Erreur : Le fichier de cookies n\'existe pas. Assurez-vous que le chemin est correct et que le fichier est présent.');
-  process.exit(1);
-}
-
-// Lire le fichier de cookies
-const cookies = JSON.parse(fs.readFileSync(cookieFilePath, 'utf-8'));
+// Cookies intégrés directement dans le code
+const cookies = [
+  {
+    "domain": ".youtube.com",
+    "expirationDate": 1723746801,
+    "hostOnly": false,
+    "httpOnly": true,
+    "name": "GPS",
+    "path": "/",
+    "sameSite": "unspecified",
+    "secure": true,
+    "session": false,
+    "storeId": "0",
+    "value": "1",
+    "id": 1
+  },
+  {
+    "domain": ".youtube.com",
+    "expirationDate": 1758305005,
+    "hostOnly": false,
+    "httpOnly": false,
+    "name": "PREF",
+    "path": "/",
+    "sameSite": "unspecified",
+    "secure": true,
+    "session": false,
+    "storeId": "0",
+    "value": "f6=40000000&tz=Africa.Ouagadougou",
+    "id": 2
+  }
+];
 
 // Convertir les cookies en un en-tête de requête
 const cookieHeader = cookies.map(cookie => `${cookie.name}=${cookie.value}`).join('; ');
