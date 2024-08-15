@@ -2,10 +2,71 @@ const { zokou } = require("../framework/zokou");
 const yts = require('yt-search');
 const ytdl = require('ytdl-core');
 const fs = require('fs');
-const CookieFile = require('cookiefile');
 
-const cookieFilePath = require('../bdd/coki'); // Remplacez par le chemin réel de votre fichier cookies.txt
-const cookies = new CookieFile.CookieMap(cookieFilePath);
+// Chemin vers votre fichier de cookies
+const cookieFilePath = '../bdd/coki.json';
+
+// Vérifiez si le fichier de cookies existe
+if (!fs.existsSync(cookieFilePath)) {
+  console.error('Erreur : Le fichier de cookies n\'existe pas. Assurez-vous que le chemin est correct et que le fichier est présent.');
+  process.exit(1);
+}
+
+// Lire le fichier de cookies
+const cookies = JSON.parse(fs.readFileSync(cookieFilePath, 'utf-8'));
+
+// Convertir les cookies en un en-tête de requête
+const cookieHeader = cookies.map(cookie => `${cookie.name}=${cookie.value}`).join('; ');
+
+async function downloadAudio(url, outputPath) {
+  return new Promise((resolve, reject) => {
+    const audioStream = ytdl(url, {
+      filter: 'audioonly',
+      quality: 'highestaudio',
+      requestOptions: {
+        headers: {
+          Cookie: cookieHeader
+        }
+      }
+    });
+
+    const fileStream = fs.createWriteStream(outputPath);
+    audioStream.pipe(fileStream);
+
+    fileStream.on('finish', () => {
+      resolve();
+    });
+
+    fileStream.on('error', (error) => {
+      reject(error);
+    });
+  });
+}
+
+async function downloadVideo(url, outputPath) {
+  return new Promise((resolve, reject) => {
+    const videoStream = ytdl(url, {
+      filter: 'videoandaudio',
+      quality: 'highestvideo',
+      requestOptions: {
+        headers: {
+          Cookie: cookieHeader
+        }
+      }
+    });
+
+    const fileStream = fs.createWriteStream(outputPath);
+    videoStream.pipe(fileStream);
+
+    fileStream.on('finish', () => {
+      resolve();
+    });
+
+    fileStream.on('error', (error) => {
+      reject(error);
+    });
+  });
+}
 
 zokou({
   nomCom: "song",
@@ -41,30 +102,11 @@ _*En cours de téléchargement...*_\n\n`
       zk.sendMessage(origineMessage, infoMess, { quoted: ms });
 
       const filename = 'audio.mp3';
-      const cookieHeader = cookies.toRequestHeader();
 
-      const audioStream = ytdl(urlElement, {
-        filter: 'audioonly',
-        quality: 'highestaudio',
-        requestOptions: {
-          headers: {
-            Cookie: cookieHeader
-          }
-        }
-      });
+      await downloadAudio(urlElement, filename);
 
-      const fileStream = fs.createWriteStream(filename);
-      audioStream.pipe(fileStream);
-
-      fileStream.on('finish', () => {
-        zk.sendMessage(origineMessage, { audio: { url: filename }, mimetype: 'audio/mp4' }, { quoted: ms, ptt: false });
-        console.log("Envoi du fichier audio terminé !");
-      });
-
-      fileStream.on('error', (error) => {
-        console.error('Erreur lors de l\'écriture du fichier audio :', error);
-        repondre('Une erreur est survenue lors de l\'écriture du fichier audio.');
-      });
+      zk.sendMessage(origineMessage, { audio: { url: filename }, mimetype: 'audio/mp4' }, { quoted: ms, ptt: false });
+      console.log("Envoi du fichier audio terminé !");
     } else {
       repondre('Aucune vidéo trouvée.');
     }
@@ -82,7 +124,7 @@ zokou({
   const { arg, ms, repondre } = commandeOptions;
 
   if (!arg[0]) {
-    repondre("Veillez entrer un terme de recherche s'il vous plaît");
+    repondre("Veuillez entrer un terme de recherche s'il vous plaît");
     return;
   }
 
@@ -105,28 +147,10 @@ _*En cours de téléchargement...*_\n\n`
       zk.sendMessage(origineMessage, InfoMess, { quoted: ms });
 
       const filename = 'video.mp4';
-      const cookieHeader = cookies.toRequestHeader();
 
-      const videoStream = ytdl(Element.url, {
-        format: 'mp4',
-        requestOptions: {
-          headers: {
-            Cookie: cookieHeader
-          }
-        }
-      });
+      await downloadVideo(Element.url, filename);
 
-      const fileStream = fs.createWriteStream(filename);
-      videoStream.pipe(fileStream);
-
-      fileStream.on('finish', () => {
-        zk.sendMessage(origineMessage, { video: { url: filename }, caption: "*Zokou-Md", gifPlayback: false }, { quoted: ms });
-      });
-
-      fileStream.on('error', (error) => {
-        console.error('Erreur lors de l\'écriture du fichier vidéo :', error);
-        repondre('Une erreur est survenue lors de l\'écriture du fichier vidéo.');
-      });
+      zk.sendMessage(origineMessage, { video: { url: filename }, caption: "*Zokou-Md", gifPlayback: false }, { quoted: ms });
     } else {
       repondre('Aucune vidéo trouvée.');
     }
