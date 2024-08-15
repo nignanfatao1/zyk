@@ -4,7 +4,7 @@ const ytdl = require('ytdl-core');
 const fs = require('fs');
 
 // Chemin vers votre fichier de cookies
-const cookieFilePath = '../bdd/coki.json';
+const cookieFilePath = '../bdd/coki';
 
 // Vérifiez si le fichier de cookies existe
 if (!fs.existsSync(cookieFilePath)) {
