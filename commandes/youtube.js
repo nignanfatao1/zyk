@@ -4,7 +4,7 @@ const ytdl = require('ytdl-core');
 const fs = require('fs');
 const CookieFile = require('cookiefile');
 
-const cookieFilePath = 'path/to/your/cookies.txt'; // Remplacez par le chemin réel de votre fichier cookies.txt
+const cookieFilePath = '../coki.json' // Remplacez par le chemin réel de votre fichier cookies.txt
 const cookies = new CookieFile.CookieMap(cookieFilePath);
 
 zokou({
