@@ -11,7 +11,7 @@ zokou(
         if (!arg || arg.length === 0)  {
             const lien = 'https://telegra.ph/file/201aa2dc22b1fb47ba885.jpg';
             const msg = 'salut';
-            zk.sendMessage(
+            zk.sendButtonImage(
                 dest,
                 {
                     image: { url: lien },
