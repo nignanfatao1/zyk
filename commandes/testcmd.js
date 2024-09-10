@@ -1,16 +1,25 @@
-buttons: [
-            {
-                "name": "cta_url",
-                "buttonParamsJson": `{\"display_text\":\"Instagram 🦋\",\"url\":\"https://instagram.com/${Config.instagramId}\",\"merchant_url\":\"https://www.google.com\"}`
-            },
-            {
-                "name": "cta_url",
-                "buttonParamsJson": "{\"display_text\":\"WhatsApp Channel 🔮\",\"url\":\"https://whatsapp.com/channel/0029VaDIPkA6buMS9hRE7y2G\",\"merchant_url\":\"https://www.google.com\"}"
-            },
-            {
-                "name": "cta_url",
-                "buttonParamsJson": "{\"display_text\":\"YouTube Channel 💗\",\"url\":\"https://youtube.com/@pika_kunn\",\"merchant_url\":\"https://www.google.com\"}"
-            },
-            { "name": "quick_reply", "buttonParamsJson": `{\"display_text\":\"Owner 👤\",\"id\":\"${prefix}owner\"}` },
-            { "name": "quick_reply", "buttonParamsJson": `{\"display_text\":\"Script 🧿\",\"id\":\"${prefix}sc\"}` }
+const { zokou } = require('../framework/zokou');
+
+zokou(
+    {
+        nomCom: 'menun',
+        categorie: 'Other'
+    },
+    async (dest, zk, commandeOptions) => {
+        const { repondre, arg, ms } = commandeOptions;
+
+        if (!arg || arg.length === 0)  {
+           // const lien = 'https://telegra.ph/file/201aa2dc22b1fb47ba885.jpg';
+            const msg = '';
+            zk.sendMessage(
+                        dest,
+                        { image: { url: lien },
+                        caption: msg },
+                        buttons: [
+            { "name": "quick_reply", "buttonParamsJson": `{\"display_text\":\"test\",\"id\":\"+test\"}` },
+            { "name": "quick_reply", "buttonParamsJson": `{\"display_text\":\"test1\",\"id\":\"+test\"}` }
         ],
+                        { quoted: ms });
+        }
+    }
+);
