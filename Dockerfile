@@ -9,7 +9,7 @@ RUN apt-get update && \
   npm i pm2 -g && \
   rm -rf /var/lib/apt/lists/*
   
-RUN git clone https://github.com/nignanfatao1/Zyy  /root/my_zyy_app
+RUN git clone https://github.com/nignanfatao1/zyk  /root/my_zyy_app
 WORKDIR /root/my_zyy_app/
 
 
